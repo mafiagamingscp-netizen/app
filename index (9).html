@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تشغيل كود Python تلقائي + يدوي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background:#f1f5f9;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+        }
+        .box{
+            background:#fff;
+            padding:30px;
+            border-radius:16px;
+            width:100%;
+            max-width:360px;
+            box-shadow:0 10px 30px rgba(0,0,0,.1);
+            text-align:center;
+        }
+        button{
+            width:100%;
+            padding:15px;
+            font-size:16px;
+            border:none;
+            border-radius:12px;
+            background:#2563eb;
+            color:#fff;
+            cursor:pointer;
+            margin-top:15px;
+        }
+        button:active{
+            transform:scale(.96);
+        }
+        .status{
+            margin-top:15px;
+            font-size:14px;
+            color:#16a34a;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>تشغيل كود Python</h2>
+    <p>يتم التنفيذ تلقائيًا عند فتح الصفحة، أو اضغط الزر لتشغيله يدويًا</p>
+
+    <!-- 🔘 زر التشغيل اليدوي -->
+    <button onclick="runPython('manual')">تشغيل الكود يدويًا</button>
+
+    <!-- 📩 النتيجة -->
+    <div class="status" id="result">⏳ جاري التنفيذ...</div>
+</div>
+
+<script>
+// تشغيل تلقائي عند تحميل الصفحة
+window.onload = function () {
+    runPython('auto');
+};
+
+// الدالة المسؤولة عن التنفيذ
+function runPython(actionType) {
+    document.getElementById("result").innerText = "⏳ جاري التنفيذ...";
+
+    fetch("http://127.0.0.1:5000/run-python", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ action: actionType })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("result").innerText = data.message;
+        console.log("Python response:", data.message);
+    })
+    .catch(err => {
+        document.getElementById("result").innerText = "❌ فشل الاتصال بسيرفر Python";
+        console.error("Python server error", err);
+    });
+}
+</script>
+
+</body>
+</html>
